@@ -1,14 +1,24 @@
 import 'babel-polyfill';
 import $ from 'webpack-zepto';
-import Quill from 'quill'
+import Quill from './custom-quill'
 
 require('./assets/go-editor.css');
-// require('./assets/quill.core.css');
+require('./assets/quill.core.css');
 
 
 var options = {
     modules: {
-        toolbar: true
+        toolbar: [
+            [{'font': []}, {'size': []}],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{'color': []}, {'background': []}],
+            [{'script': 'super'}, {'script': 'sub'}],
+            [{'header': '1'}, {'header': '2'}, 'blockquote', 'code-block'],
+            [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+            [{'align': []}],
+            ['link', 'image', 'video'],
+            ['clean']
+        ]
     },
     placeholder: '请输入攻略 ...',
     // debug: 'info'
@@ -16,65 +26,52 @@ var options = {
 };
 let quill = new Quill('#editor-container', options);
 
-var toggleQlBlank = function () {
-    let initContent = quill.getContents();
-    if (initContent.ops.length == 1 && initContent.ops[0].insert == '\n') {
-        quill.format('go', 'body', Quill.sources.USER);
-        quill.root.classList.add('ql-blank');
+var toolbar = quill.getModule('toolbar');
+toolbar.addHandler('image', function (value) {
+    console.log('value');
+    console.log(value);
+
+    // let range = this.quill.getSelection(true);
+    // this.quill.insertText(range.index, '\n', Quill.sources.USER);
+    // this.quill.insertEmbed(range.index + 1, 'myimage', {
+    //     alt: 'Quill Cloud',
+    //     url: 'http://7tszlo.com1.z0.glb.clouddn.com/28f6f382-5c68-11e5-afc1-00163e002e64.png'
+    // }, Quill.sources.USER);
+    // this.quill.setSelection(range.index + 2, Quill.sources.SILENT);
+
+    let fileInput = this.quill.container.querySelector('input.ql-image[type=file]');
+    if (fileInput == null) {
+        fileInput = document.createElement('input');
+        fileInput.setAttribute('type', 'file');
+        fileInput.setAttribute('accept', 'image/*');
+        fileInput.setAttribute('multiple', 'multiple');
+        fileInput.classList.add('ql-image');
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files != null && fileInput.files.length > 0) {
+                Array.prototype.forEach.call(fileInput.files, (file) => {
+                    var reader = new FileReader();
+                    // reader.readAsDataURL(file);
+                    reader.readAsBinaryString(file);
+                    reader.onload = function(e){
+                        console.log(e.target.result);
+                    };
+                })
+            }
+        });
+        this.quill.container.appendChild(fileInput);
     }
-};
-
-toggleQlBlank();
-
-quill.on('editor-change', function (eventName, ...args) {
-    console.log(eventName);
-    console.log(JSON.stringify(args));
-    if (eventName === 'text-change') {
-        // args[0] will be delta
-        // console.log(JSON.stringify(args));
-        toggleQlBlank();
-    }
+    fileInput.click();
 });
 
+toolbar.addHandler('link', function (value) {
+    console.log(value);
+    let range = this.quill.getSelection(true);
+    this.quill.insertText(range.index, '\n', Quill.sources.USER);
 
+    let url = 'https://v.qq.com/iframe/player.html?vid=u0330jo858m&auto=0';
+    this.quill.insertEmbed(range.index + 1, 'vqq-video', url, Quill.sources.USER);
+    // quill.formatText(range.index + 1, 1, { height: '170', width: '400' });
 
-$('#h1-button').click(function () {
-    quill.format('go', 'h1', Quill.sources.USER);
-});
-$('#h2-button').click(function () {
-    quill.format('go', 'h2', Quill.sources.USER);
-});
-$('#body-button').click(function () {
-    quill.format('go', 'body', Quill.sources.USER);
-});
-$('#bold-button').click(function () {
-    quill.format('go', 'bold', Quill.sources.USER);
-});
-$('#quote-button').click(function () {
-    quill.format('go', 'quote', Quill.sources.USER);
-});
-$('#center-button').click(function () {
-    quill.format('go', 'center', Quill.sources.USER);
-});
-$('#red-button').click(function () {
-    quill.format('go', 'red', Quill.sources.USER);
-});
-
-
-$('#img-button').click(function () {
-    console.log('sdfasdfasdf')
-    let range = quill.getSelection(true);
-
-    // let initContent = quill.getContents();
-    // if (initContent.ops.length == 1 && initContent.ops[0].insert == '\n') {
-    // }
-
-    console.log(JSON.stringify(range));
-    quill.insertText(range.index, '\n', Quill.sources.USER);
-    quill.insertEmbed(range.index + 1, 'myimage', {
-        alt: 'Quill Cloud',
-        url: 'http://7tszlo.com1.z0.glb.clouddn.com/28f6f382-5c68-11e5-afc1-00163e002e64.png'
-    }, Quill.sources.USER);
-    // 上面Quill.sources.API例子中为Quill.sources.USER(尚不清晰为啥会报错)
-    quill.setSelection(range.index + 2, Quill.sources.SILENT);
+    // this.quill.insertEmbed(range.index + 1, 'feed', 11, Quill.sources.USER);
+    this.quill.setSelection(range.index + 2, Quill.sources.SILENT);
 });

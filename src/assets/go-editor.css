@@ -287,8 +287,8 @@ a {
 }
 
 
-.ql-editor.ql-blank::before {
-    font-weight: normal;
-    font-size: 14px;
-    line-height: 2;
-}
+/*.ql-editor.ql-blank::before {*/
+    /*font-weight: normal;*/
+    /*font-size: 14px;*/
+    /*line-height: 2;*/
+/*}*/

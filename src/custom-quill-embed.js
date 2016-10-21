@@ -20,4 +20,88 @@ class ImageBlot extends BlockEmbed {
 ImageBlot.blotName = 'myimage';
 ImageBlot.tagName = 'img';
 
-export { ImageBlot };
+
+var generateFeedHtml = function(feedInfo){
+    var feedId = feedInfo.id;
+    var feedCover = 'http://7tszlo.com1.z0.glb.clouddn.com/9df060d8-9768-11e6-8320-00163e002e64.jpg?imageMogr2/auto-orient/thumbnail/100x100!';
+    var feedTitle = '中国首个连锁主题公园上海欢乐谷';
+    var feedAddress = '上海欢乐谷·长期有效';
+
+    var feedHtml =
+        '<a style="text-decoration: none;" id="feed-' + feedId + '" href="http://www.baidu.com" class="feed close-wrapper" contenteditable="false">\n' +
+        '   <img class="feed-cover" src="' + feedCover + '">\n' +
+        '   <div class="feed-info">\n' +
+        '       <div class="feed-title">' + feedTitle + '</div>\n' +
+        '       <div class="feed-address">' + feedAddress + '</div>\n' +
+        '   </div>\n' +
+        '   <div class="close right-top"></div>' +
+        '</a>\n';
+    return feedHtml;
+};
+
+class FeedBlot extends BlockEmbed {
+    static create(id) {
+        let node = super.create();
+        node.dataset.id = id;
+        // Allow twitter library to modify our contents
+        node.innerHTML = generateFeedHtml({id: id});
+        return node;
+    }
+
+    static value(domNode) {
+        return domNode.dataset.id;
+    }
+}
+FeedBlot.blotName = 'feed';
+FeedBlot.tagName = 'div';
+FeedBlot.className = 'feed';
+
+
+class VqqVideoBlot extends BlockEmbed {
+    static create(url) {
+        let node = super.create();
+
+        // Set non-format related attributes with static values
+        node.setAttribute('frameborder', '0');
+        node.setAttribute('allowfullscreen', true);
+        node.setAttribute('scrolling', 'no');
+        node.setAttribute('src', url);
+        node.setAttribute('style', 'min-width: 100%; width: 100px;*width: 100%;text-align:center;margin 0 auto;height:290px;')
+
+        return node;
+    }
+
+    static formats(node) {
+        // We still need to report unregistered embed formats
+        let format = {};
+        if (node.hasAttribute('height')) {
+            format.height = node.getAttribute('height');
+        }
+        if (node.hasAttribute('width')) {
+            format.width = node.getAttribute('width');
+        }
+        return format;
+    }
+
+    static value(node) {
+        return node.getAttribute('src');
+    }
+
+    format(name, value) {
+        // Handle unregistered embed formats
+        if (name === 'height' || name === 'width') {
+            if (value) {
+                this.domNode.setAttribute(name, value);
+            } else {
+                this.domNode.removeAttribute(name, value);
+            }
+        } else {
+            super.format(name, value);
+        }
+    }
+}
+VqqVideoBlot.blotName = 'vqq-video';
+VqqVideoBlot.tagName = 'iframe';
+
+
+export { ImageBlot, FeedBlot, VqqVideoBlot};

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Include stylesheet -->
+    <link href="https://cdn.quilljs.com/1.1.0/quill.snow.css" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            width: 100%;
+        }
+        body {
+            padding: 25px;
+        }
+
+        #editor-container {
+            border: 1px solid #ccc;
+            font-family: 'Open Sans', Helvetica, sans-serif;
+        }
+
+        .toolbar {
+            height: 30px;
+            line-height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+<div class="container">
+    <div class="go-editor-title">
+        <input id="editor-title" type="text" class="editor-title" placeholder="请输入标题">
+    </div>
+    <div class="toolbar">
+        <button id="h1-button">大标题</button>
+        <button id="h2-button">小标题</button>
+        <button id="body-button">正文</button>
+        <button id="quote-button">引用</button>
+        <button id="bold-button">加粗</button>
+        <button id="center-button">居中</button>
+        <button id="red-button">变红</button>
+        <button id="img-button">图片</button>
+    </div>
+    <div id="editor-container" class="go-editor">
+        <p class="go-body"><br></p>
+    </div>
+</div>
+
+<!--<script src="//cdn.quilljs.com/1.0.0/quill.js"></script>-->
+<script src="/dist/app.bundle.js"></script>
+<!--<script>-->
+<!--//    var quill = new Quill('#editor-container');-->
+<!--</script>-->
+
+</body>
+</html>

@@ -94,13 +94,14 @@ a {
     border-radius: 50%;
 }
 
-.quote, .go-quote {
+.quote, .go-quote, blockquote {
     display: block;
     border-left: 4px solid #E0E0E0;
     padding: 5px 0 5px 15px;
     margin: 20px 0;
     color: #979797;
 }
+
 
 .bold, .go-bold {
     font-weight: bold;
@@ -284,6 +285,10 @@ a {
     width: 20px;
     box-sizing: border-box;
     margin-right: 5px;
+}
+
+.active {
+    color: #d94648;
 }
 
 

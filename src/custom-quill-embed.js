@@ -23,12 +23,12 @@ ImageBlot.tagName = 'img';
 
 var generateFeedHtml = function(feedInfo){
     var feedId = feedInfo.id;
-    var feedCover = 'http://7tszlo.com1.z0.glb.clouddn.com/9df060d8-9768-11e6-8320-00163e002e64.jpg?imageMogr2/auto-orient/thumbnail/100x100!';
-    var feedTitle = '中国首个连锁主题公园上海欢乐谷';
-    var feedAddress = '上海欢乐谷·长期有效';
+    var feedCover = feedInfo.covers[0].url.replace('-owebp', '') + '?imageMogr2/auto-orient/thumbnail/100x100!';
+    var feedTitle = feedInfo.tiny_title ? feedInfo.tiny_title : feedInfo.title;
+    var feedAddress = feedInfo.addresses[0].name + '·' + feedInfo.time;
 
     var feedHtml =
-        '<a style="text-decoration: none;" id="feed-' + feedId + '" href="http://www.baidu.com" class="feed close-wrapper" contenteditable="false">\n' +
+        '<a style="text-decoration: none;" id="feed-' + feedId + '" href="letsgo://v1/feeds/' + feedId + '" class="feed close-wrapper" contenteditable="false">\n' +
         '   <img class="feed-cover" src="' + feedCover + '">\n' +
         '   <div class="feed-info">\n' +
         '       <div class="feed-title">' + feedTitle + '</div>\n' +
@@ -40,11 +40,10 @@ var generateFeedHtml = function(feedInfo){
 };
 
 class FeedBlot extends BlockEmbed {
-    static create(id) {
+    static create(feedInfo) {
         let node = super.create();
-        node.dataset.id = id;
-        // Allow twitter library to modify our contents
-        node.innerHTML = generateFeedHtml({id: id});
+        node.dataset.id = feedInfo.id;
+        node.innerHTML = generateFeedHtml(feedInfo);
         return node;
     }
 
@@ -60,13 +59,12 @@ FeedBlot.className = 'feed';
 class VqqVideoBlot extends BlockEmbed {
     static create(url) {
         let node = super.create();
-
         // Set non-format related attributes with static values
         node.setAttribute('frameborder', '0');
         node.setAttribute('allowfullscreen', true);
         node.setAttribute('scrolling', 'no');
         node.setAttribute('src', url);
-        node.setAttribute('style', 'min-width: 100%; width: 100px;*width: 100%;text-align:center;margin 0 auto;height:290px;')
+        node.setAttribute('style', 'min-width: 100%; width: 100px;*width: 100%;text-align:center;margin 0 auto;height:290px;');
 
         return node;
     }
@@ -104,4 +102,4 @@ VqqVideoBlot.blotName = 'vqq-video';
 VqqVideoBlot.tagName = 'iframe';
 
 
-export { ImageBlot, FeedBlot, VqqVideoBlot};
+export { ImageBlot, FeedBlot, VqqVideoBlot };

@@ -59,6 +59,15 @@ $('#body-button').click(function () {
 $('#bold-button').click(function () {
     quill.format('go', 'bold', Quill.sources.USER);
 });
+
+$('#italic-button').click(function () {
+    quill.format('italic', true, Quill.sources.USER);
+});
+
+$('#underline-button').click(function () {
+    quill.format('underline', true, Quill.sources.USER);
+});
+
 $('#quote-button').click(function () {
     quill.format('go', 'quote', Quill.sources.USER);
 });

@@ -25,7 +25,8 @@ var generateFeedHtml = function(feedInfo){
     var feedId = feedInfo.id;
     var feedCover = feedInfo.covers[0].url.replace('-owebp', '') + '?imageMogr2/auto-orient/thumbnail/100x100!';
     var feedTitle = feedInfo.tiny_title ? feedInfo.tiny_title : feedInfo.title;
-    var feedAddress = feedInfo.addresses[0].name + '·' + feedInfo.time;
+    // var feedAddress = feedInfo.addresses[0].name + '·' + feedInfo.time;
+    var feedAddress = feedInfo.addresses[0].name;
 
     var feedHtml =
         '<a style="text-decoration: none;" id="feed-' + feedId + '" href="letsgo://v1/feeds/' + feedId + '" class="feed close-wrapper" contenteditable="false">\n' +
@@ -102,4 +103,11 @@ VqqVideoBlot.blotName = 'vqq-video';
 VqqVideoBlot.tagName = 'iframe';
 
 
-export { ImageBlot, FeedBlot, VqqVideoBlot };
+let Block = Quill.import('blots/block');
+
+class GoTextBlot extends Block { }
+GoTextBlot.blotName = 'go-text';
+GoTextBlot.tagName = 'p';
+
+
+export { ImageBlot, FeedBlot, VqqVideoBlot, GoTextBlot };

@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <!-- Include stylesheet -->
-    <!--<link href="https://cdn.quilljs.com/1.1.0/quill.snow.css" rel="stylesheet">-->
     <style>
         * {
             box-sizing: border-box;
@@ -12,21 +11,40 @@
 
         html, body {
             height: 100%;
-            margin: 0;
             width: 100%;
+            margin: 0;
         }
         body {
             padding: 25px;
         }
 
+        .ql-image {
+            display: none;
+        }
+
         #editor-container {
+            margin-top: 45px;
             border: 1px solid #ccc;
             font-family: 'Open Sans', Helvetica, sans-serif;
         }
 
         .toolbar {
-            height: 30px;
-            line-height: 30px;
+            height: 40px;
+            line-height: 40px;
+            position: fixed;
+            top: 0;
+            background-color: #fff;
+            z-index: 22;
+        }
+
+        .toolbar button {
+            height: 25px;
+            line-height: 25px;
+            margin: 5px 0;
+            -webkit-appearance: none;
+            border: 0;
+            background-color: #ddd;
+            padding: 0 10px;
         }
     </style>
 </head>
@@ -35,40 +53,37 @@
 
 
 <div class="container">
-    <div class="go-editor-title">
-        <input id="editor-title" type="text" class="editor-title" placeholder="请输入标题">
-    </div>
     <div class="toolbar">
         <button id="h1-button">大标题</button>
         <button id="h2-button">小标题</button>
-        <button id="body-button">正文</button>
+
         <button id="quote-button">引用</button>
         <button id="bold-button">加粗</button>
         <button id="italic-button">斜体</button>
         <button id="underline-button">下划线</button>
-        <button id="center-button">居中</button>
-        <button id="img-button">图片</button>
-        <button id="video-button">视频</button>
-        <button id="feed-button">活动</button>
+        <button id="del-button">删除线</button>
+        <select id="color-button">
+            <option value="" >颜色默认</option>
+            <option value="#D94648" style="background-color: #D94648">红色</option>
+            <option value="#548DD4" style="background-color: #548DD4">蓝色</option>
+            <option value="#F79646" style="background-color: #F79646">橘色</option>
+        </select>
+        <select id="align-button">
+            <option value="" >排列默认</option>
+            <option value="left">居左</option>
+            <option value="center">居中</option>
+            <option value="right">居右</option>
+        </select>
+        <button id="list-num-button">数字列表</button>
+        <button id="list-dot-button">点列表</button>
+        <button id="img-button">插入图片</button>
+        <button id="video-button">插入视频</button>
+        <button id="feed-button">插入活动</button>
+        <button id="brush-button">格式刷</button>
+        <button id="body-button">清除格式</button>
+
     </div>
     <div id="editor-container"></div>
-        <!--<p style="line-height: 1.5em; font-size: 16px; white-space: normal;"><br/></p>-->
-        <!--<p style="line-height: 1.5em; font-size: 16px; white-space: normal;"><br/></p>-->
-        <!--<p style="line-height: 4em;"><span style="color: rgb(89, 89, 89);"><strong>-->
-            <!--<span style="font-family: 宋体, SimSun; font-size: 16px;">剧情简介</span></strong></span>-->
-        <!--</p>-->
-        <!--<p style="line-height: 1.5em; font-size: 16px; white-space: normal;">-->
-            <!--<span style="font-family: 宋体, SimSun; font-size: 14px;">-->
-                <!--<img src="http://7tszlo.com1.z0.glb.clouddn.com/c737fe94-59ef-11e6-9984-00163e002e64.jpg" title="5.jpg" alt="5.jpg"/>-->
-            <!--</span>-->
-        <!--</p>-->
-        <!--<p style="line-height: 4em;"><span style="color: rgb(89, 89, 89);"><strong>-->
-            <!--<span style="font-family: 宋体, SimSun; font-size: 16px;">剧情简介</span></strong></span>-->
-        <!--</p>-->
-        <!--<p style="line-height: 1.5em;"><span style="font-family: 宋体, SimSun; font-size: 14px; color: rgb(89, 89, 89);">《搁浅》讲述了4个意气风发的少年马尔科、米什卡、莲娜和科瓦奇在面对理想、爱情的妥协与坚持中的故事。话剧将用一种游戏感的欢腾方式来探讨搁浅本身、面对搁浅的态度和搁浅之后的出路和成长复兴，直面深刻与真挚。</span></p>-->
-        <!--<p><br/></p><p><br/></p>-->
-        <!--<p><img src="http://7tszlo.com1.z0.glb.clouddn.com/1e44936c-59f2-11e6-83b9-00163e002e64.jpg" title="8.jpg" alt="8.jpg"/></p><p style="line-height: 4em;"><span style="font-size: 16px;"><strong><span style="color: rgb(89, 89, 89); font-family: 宋体, SimSun;">监制 康洪雷</span></strong></span></p><p style="line-height: 1.5em;"><span style="font-family: 宋体, SimSun; color: rgb(89, 89, 89); font-size: 14px;">著名导演，国家一级导演。曾执导《激情燃烧的岁月》、《士兵突击》等影视作品，此次是他首度监制话剧。</span></p><p style="line-height: 1.5em;"><span style="font-family: 宋体, SimSun; color: rgb(89, 89, 89); font-size: 14px;">他说：“话剧是一直没有割舍的情怀，我也是话剧演员出身，本身也爱看戏。”</span></p><p style="line-height: 1.5em;"><span style="font-family: 宋体, SimSun; color: rgb(89, 89, 89); font-size: 14px;">他表示《搁浅》是自己拿手的“男人戏”，气质硬朗又充满活力和幽默。</span></p><p style="line-height: 1.5em;"><br/></p><p style="line-height: 1.5em;"><br/></p><p><img src="http://7tszlo.com1.z0.glb.clouddn.com/fc1f10c8-59f1-11e6-83b9-00163e002e64.jpg" title="7.jpg" alt="7.jpg"/></p><p style="line-height: 4em;"><span style="color: rgb(89, 89, 89);"><strong><span style="font-size: 16px; font-family: 宋体, SimSun;">演员 江佳奇</span></strong></span></p><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89); font-family: 宋体, SimSun; font-size: 14px;">中国国家话剧院演员，毕业于中央戏剧学院表演系。</span></p><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89); font-family: 宋体, SimSun; font-size: 14px;">主要话剧作品：《青春禁忌游戏》、《死无葬身之地》、《肖邦》等。</span></p><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89); font-family: 宋体, SimSun; font-size: 14px;">主要影视作品：《虎妈猫爸》、《亲爱的，好久不见》。</span><span style="font-family: 宋体, SimSun; font-size: 14px;"><br style="color: rgb(51, 51, 51); font-family: verdana, Arial, Helvetica, 宋体, sans-serif; font-size: 12px; line-height: 22px; white-space: normal; background-color: rgb(255, 255, 255);"/></span><br/></p><p><br/></p><p><img src="http://7tszlo.com1.z0.glb.clouddn.com/6fb7b6cc-59f0-11e6-83b9-00163e002e64.jpg" title="1.jpg" alt="1.jpg"/></p><p style="line-height: 4em;"><span style="font-size: 16px;"><strong><span style="color: rgb(89, 89, 89); font-family: 宋体, SimSun;">特邀出演 冯宪珍</span></strong></span></p><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89); font-family: 宋体, SimSun; font-size: 14px;">国家一级演员、中国戏剧梅花奖、中国话剧金狮奖得主。</span></p><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89); font-family: 宋体, SimSun; font-size: 14px;">代表作品：话剧《命运的拨弄》、《老妇还乡》、《青春禁忌游戏》、《死无葬身之地》等。</span></p><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89); font-family: 宋体, SimSun; font-size: 14px;">电视剧：《爱你没商量》、《夫妻十年》。</span></p><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89); font-family: 宋体, SimSun; font-size: 14px;">话剧女王戏骨冯宪珍将在《搁浅》中一反常态，在剧中出演“神秘”角色。</span></p><p style="line-height: 1.5em;"><span style="color: rgb(89, 89, 89); font-family: 宋体, SimSun; font-size: 14px;">她说：“这个角色是我一直以来都想创作的一种形式，一直都在找寻。”</span></p><p><br/></p><p><br/></p><p><img src="http://7tszlo.com1.z0.glb.clouddn.com/8d4e3620-59f0-11e6-83b9-00163e002e64.jpg" title="6.jpg" alt="6.jpg"/></p><p style="line-height: 4em;"><span style="font-size: 16px; color: rgb(89, 89, 89);"><strong><span style="font-size: 16px; font-family: 宋体, SimSun;">导演阐述</span></strong></span></p><p style="line-height: 1.5em;"><span style="font-family: 宋体, SimSun; font-size: 14px; color: rgb(89, 89, 89);">这部戏就像编剧的成长过程的梳理，从开始的否定，到后来的反思，到最后觉得搁浅无法逃避，我们觉得不仅要承认搁浅，更要反思搁浅的伟大意义。</span></p><p style="line-height: 1.5em;"><span style="font-family: 宋体, SimSun; font-size: 14px; color: rgb(89, 89, 89);">搁浅往往是人们最容易忽视的伟大过程之一，因为在搁浅中才能去沉淀和准备，当我们再度起航，才明白搁浅的力量。</span></p><p><br/></p>-->
-    <!--</div>-->
 </div>
 
 <script src="/dist/app.bundle.js"></script>

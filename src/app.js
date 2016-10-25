@@ -26,19 +26,6 @@ var options = {
 };
 let quill = new Quill('#editor-container', options);
 
-// quill.on('editor-change', function(eventName, ...args) {
-//     if (eventName === 'text-change') {
-//         console.log('text-change');
-//     } else if (eventName === 'selection-change') {
-//         console.log('selection-change');
-//
-//         let range = quill.getSelection(true);
-//         let formats = range == null ? {} : this.quill.getFormat(range);
-//         console.log(formats);
-//         console.log(JSON.stringify(formats));
-//     }
-// });
-
 let toolbars = [{
     name: 'header',
     value: 1,
@@ -56,26 +43,63 @@ let toolbars = [{
     value: true,
     selector: '#quote-button'
 }, {
-    name: 'underline',
-    value: true,
-    selector: '#underline-button'
-}, {
     name: 'italic',
     value: true,
     selector: '#italic-button'
 }, {
+    name: 'underline',
+    value: true,
+    selector: '#underline-button'
+}, {
+    name: 'strike',
+    value: true,
+    selector: '#del-button'
+}, {
+    name: 'list',
+    value: 'bullet',
+    selector: '#list-dot-button'
+}, {
+    name: 'list',
+    value: 'ordered',
+    selector: '#list-num-button'
+}, {
     name: 'go',
-    value: 'center',
-    selector: '#center-button'
+    value: 'red',
+    selector: '#go-red-button'
 }];
 
+var selectionFormat = null;
 quill.on(Quill.events.EDITOR_CHANGE, (type, range) => {
     if (type === Quill.events.SELECTION_CHANGE) {
         let formats = range == null ? {} : quill.getFormat(range);
-        console.log(formats);
+
+        // 使用刷子
+        if (range && range.length > 0 && selectionFormat) {
+            if (Object.keys(selectionFormat).length == 0) {
+                let selectionRange = quill.getSelection(true);
+                if (selectionRange) {
+                    quill.removeFormat(selectionRange.index, selectionRange.length);
+                    quill.format('go-text', true);
+                }
+                return
+            }
+
+            Object.keys(selectionFormat).forEach((formatKey) => {
+                quill.format(formatKey, selectionFormat[formatKey], Quill.sources.API);
+            });
+        }
+
+        // 对于工具栏中的刷子 按钮,单独处理
+        if (selectionFormat) {
+            $('#brush-button').addClass('active');
+        } else {
+            $('#brush-button').removeClass('active');
+        }
+
+        // 设置选中range后, 工具栏的样式变化
         toolbars.forEach((toolbar) => {
-            if(formats[toolbar.name] == toolbar.value) {
-               $(toolbar.selector).addClass('active')
+            if (formats[toolbar.name] == toolbar.value) {
+                $(toolbar.selector).addClass('active')
             } else {
                 $(toolbar.selector).removeClass('active')
             }
@@ -83,37 +107,92 @@ quill.on(Quill.events.EDITOR_CHANGE, (type, range) => {
     }
 });
 
-//
+var toggleFormat = function (formatName, formatValue) {
+     if(quill.getFormat()[formatName] == formatValue){
+        quill.format(formatName, false, Quill.sources.USER);
+    } else {
+        quill.format(formatName, formatValue, Quill.sources.USER);
+    }
+};
 
 $('#h1-button').click(function () {
-    quill.format('header', 1, Quill.sources.USER);
+    toggleFormat('header', 1)
 });
+
 $('#h2-button').click(function () {
-    quill.format('header', 2, Quill.sources.USER);
+    toggleFormat('header', 2)
 });
+
 $('#body-button').click(function () {
     let range = quill.getSelection(true);
     if (range) {
-        console.log('quill.removeFormat(range.index, range.length);');
         quill.removeFormat(range.index, range.length);
+        quill.format('go-text', true);
     }
 });
+
 $('#bold-button').click(function () {
-    quill.format('bold', true, Quill.sources.USER);
-});
-$('#quote-button').click(function () {
-    quill.format('blockquote', true, Quill.sources.USER);
-});
-$('#underline-button').click(function () {
-    quill.format('underline', true, Quill.sources.USER);
-});
-$('#italic-button').click(function () {
-    quill.format('italic', true, Quill.sources.USER);
+    toggleFormat('bold', true);
 });
 
-$('#center-button').click(function () {
-    quill.format('go', 'center', Quill.sources.USER);
+$('#quote-button').click(function () {
+    toggleFormat('blockquote', true);
 });
+
+$('#underline-button').click(function () {
+    toggleFormat('underline', true);
+});
+
+$('#italic-button').click(function () {
+    toggleFormat('italic', true);
+});
+
+
+$('#list-num-button').click(function () {
+    toggleFormat('list', 'ordered');
+});
+
+$('#list-dot-button').click(function () {
+    toggleFormat('list', 'bullet');
+});
+
+$('#del-button').click(function () {
+    toggleFormat('strike', true);
+});
+
+
+$('#brush-button').click(function () {
+    if (selectionFormat) {
+        selectionFormat = null;
+    } else {
+        let range = quill.getSelection(true);
+        if (range) {
+            selectionFormat = quill.getFormat(range.index, range.length);
+            document.body.style.cursor = 'pointer'
+        }
+    }
+});
+
+$('#color-button').change(function () {
+    console.log($('#color-button').val());
+    let selectedColor = $('#color-button').val();
+    if (selectedColor) {
+        quill.format('go-color', selectedColor, Quill.sources.USER);
+    } else {
+        quill.format('go-color', false, Quill.sources.USER);
+    }
+});
+
+$('#align-button').change(function () {
+    let selectedAlign = $('#align-button').val();
+    console.log(selectedAlign);
+    if (selectedAlign) {
+        quill.format('go-align', selectedAlign, Quill.sources.USER);
+    } else {
+        quill.format('go-align', false, Quill.sources.USER);
+    }
+});
+
 $('#img-button').click(function () {
     let fileInput = document.body.querySelector('input.ql-image[type=file]');
     if (fileInput == null) {
@@ -127,7 +206,7 @@ $('#img-button').click(function () {
                 Array.prototype.forEach.call(fileInput.files, (file) => {
                     var reader = new FileReader();
                     reader.readAsBinaryString(file);
-                    reader.onload = function(e){
+                    reader.onload = function (e) {
                         console.log(e.target.result);
 
                         let range = quill.getSelection(true);
@@ -152,12 +231,12 @@ $('#video-button').click(function () {
 
     var url = "";
     url = prompt("插入腾讯视频网址", url);
-    if(!url){
+    if (!url) {
         return;
     }
     var tvqqRegex = /^http:\/\/v\.qq\.com\/(\S*)\/(\S+)\.html$/;
     var tvqqMatch = tvqqRegex.exec(url);
-    if(!tvqqMatch) {
+    if (!tvqqMatch) {
         alert('请输入正确的腾讯视频网址');
         return;
     }
@@ -174,15 +253,15 @@ $('#feed-button').click(function () {
 
     var feedId = "";
     feedId = prompt("插入feedId", feedId);
-    if(!feedId){
+    if (!feedId) {
         return;
     }
 
     setTimeout(()=> {
         var feedInfo = {
             id: feedId,
-            covers:[{url:'http://7tszlo.com1.z0.glb.clouddn.com/47d68b8e-4efa-11e6-847a-00163e002e64.jpg'}],
-            addresses:[{name:'上海东方艺术中心'}],
+            covers: [{url: 'http://7tszlo.com1.z0.glb.clouddn.com/47d68b8e-4efa-11e6-847a-00163e002e64.jpg'}],
+            addresses: [{name: '上海东方艺术中心'}],
             title: '天空之城 | 久石让&宫崎骏经典动漫作品视听音乐会',
             time: '3天后结束'
         };
@@ -194,87 +273,3 @@ $('#feed-button').click(function () {
     }, 1000);
 });
 
-// $('#red-button').click(function () {
-//     quill.format('go', 'red', Quill.sources.USER);
-// });
-
-
-// var toolbar = quill.getModule('toolbar');
-//
-// var selectionFormat = null;
-//
-// toolbar.addHandler('code-block', function (value) {
-//     console.log('value');
-//     console.log(value);
-//
-//     let range = this.quill.getSelection(true);
-//     let formats = this.quill.getFormat(range);
-//     console.log(formats);
-//     console.log(JSON.stringify(formats));
-//     selectionFormat = formats
-// });
-//
-// toolbar.addHandler('clean1', function (value) {
-//     console.log('value');
-//     console.log(value);
-//
-//     let range = this.quill.getSelection(true);
-//     let formats = this.quill.formatText(range.index, range.length, selectionFormat);
-//     selectionFormat = null;
-// });
-//
-
-//
-// toolbar.addHandler('video', function (value) {
-//     console.log(value);
-//
-//     var url = "";
-//     url = prompt("插入腾讯视频网址", url);
-//     if(!url){
-//         return;
-//     }
-//     var tvqqRegex = /^http:\/\/v\.qq\.com\/(\S*)\/(\S+)\.html$/;
-//     var tvqqMatch = tvqqRegex.exec(url);
-//     if(!tvqqMatch) {
-//         alert('请输入正确的腾讯视频网址');
-//         return;
-//     }
-//     var tvqqVid = tvqqMatch[2];
-//     var qqUrl = "https://v.qq.com/iframe/player.html?vid=" + tvqqVid + "&auto=0";
-//
-//     let range = this.quill.getSelection(true);
-//     this.quill.insertText(range.index, '\n', Quill.sources.USER);
-//     this.quill.insertEmbed(range.index + 1, 'vqq-video', qqUrl, Quill.sources.USER);
-//     this.quill.setSelection(range.index + 2, Quill.sources.SILENT);
-// });
-//
-// toolbar.addHandler('link', function (value) {
-//     console.log(value);
-//
-//     var feedId = "";
-//     feedId = prompt("插入feedId", feedId);
-//     if(!feedId){
-//         return;
-//     }
-//
-//     setTimeout(()=> {
-//         var feedInfo = {
-//             id: feedId,
-//             covers:[{url:'http://7tszlo.com1.z0.glb.clouddn.com/47d68b8e-4efa-11e6-847a-00163e002e64.jpg'}],
-//             addresses:[{name:'上海东方艺术中心'}],
-//             title: '天空之城 | 久石让&宫崎骏经典动漫作品视听音乐会',
-//             time: '3天后结束'
-//         };
-//
-//         let range = this.quill.getSelection(true);
-//         this.quill.insertText(range.index, '\n', Quill.sources.USER);
-//         this.quill.insertEmbed(range.index + 1, 'feed', feedInfo, Quill.sources.USER);
-//         this.quill.setSelection(range.index + 2, Quill.sources.SILENT);
-//     }, 1000);
-//
-// });
-//
-// toolbar.addHandler('clean', function (value) {
-//     console.log(value);
-//     this.quill.format('go-color', 'rgb(255,255,255)');
-// });

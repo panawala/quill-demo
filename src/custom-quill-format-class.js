@@ -12,18 +12,4 @@ let goConfig = {
 };
 let GoFormatClass = new Parchment.Attributor.Class('go', 'go', goConfig);
 
-class GoColorAttributor extends Parchment.Attributor.Style {
-    value(domNode) {
-        let value = super.value(domNode);
-        if (!value.startsWith('rgb(')) return value;
-        value = value.replace(/^[^\d]+/, '').replace(/[^\d]+$/, '');
-        return '#' + value.split(',').map(function(component) {
-                return ('00' + parseInt(component).toString(16)).slice(-2);
-            }).join('');
-    }
-}
-let GoColorStyle = new GoColorAttributor('go-color', 'color', {
-    scope: Parchment.Scope.INLINE
-});
-
-export { GoFormatClass, GoColorStyle };
+export { GoFormatClass };

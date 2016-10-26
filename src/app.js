@@ -73,6 +73,8 @@ quill.on(Quill.events.EDITOR_CHANGE, (type, range) => {
     if (type === Quill.events.SELECTION_CHANGE) {
         let formats = range == null ? {} : quill.getFormat(range);
 
+        console.log(JSON.stringify(range));
+        console.log(JSON.stringify(formats));
         // 使用刷子
         if (range && range.length > 0 && selectionFormat) {
             if (Object.keys(selectionFormat).length == 0) {
@@ -201,6 +203,7 @@ $('#img-button').click(function () {
         fileInput.setAttribute('accept', 'image/*');
         fileInput.setAttribute('multiple', 'multiple');
         fileInput.classList.add('ql-image');
+        let index = 1
         fileInput.addEventListener('change', () => {
             if (fileInput.files != null && fileInput.files.length > 0) {
                 Array.prototype.forEach.call(fileInput.files, (file) => {
@@ -212,10 +215,17 @@ $('#img-button').click(function () {
                         let range = quill.getSelection(true);
                         quill.insertText(range.index, '\n', Quill.sources.USER);
                         quill.insertEmbed(range.index + 1, 'myimage', {
-                            alt: 'Quill Cloud',
+                            alt: 'Quill Cloud' + index++,
                             url: 'http://7tszlo.com1.z0.glb.clouddn.com/28f6f382-5c68-11e5-afc1-00163e002e64.png'
                         }, Quill.sources.USER);
                         quill.setSelection(range.index + 2, Quill.sources.SILENT);
+                        
+                        var container = document.getElementsByClassName(".ql-editor");
+                        var sort = Sortable.create(container, {
+                            animation: 150, // ms, animation speed moving items when sorting, `0` — without animation
+                            handle: "img", // Restricts sort start click/touch to the specified element
+                            draggable: "img" // Specifies which items inside the element should be sortable
+                        });
 
                     };
                 })
